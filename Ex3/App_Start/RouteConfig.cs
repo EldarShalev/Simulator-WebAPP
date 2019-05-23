@@ -16,8 +16,17 @@ namespace Ex3
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Web", action = "Index", id = UrlParameter.Optional }
             );
+
+            routes.MapRoute(
+                name: "display",
+                url: "{controller}/display/{ip}/{port}",
+                defaults: new { controller = "Web", action = "display", id = UrlParameter.Optional }
+            );
+
+            //routes.MapRoute(name:"display", url:"display/{ip}/{port}", defaults: new
+            //{ Controller = "Web", action ="display"});
         }
     }
 }

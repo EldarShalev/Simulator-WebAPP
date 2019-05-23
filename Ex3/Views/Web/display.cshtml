@@ -1,0 +1,22 @@
+﻿@using Ex3.Models;
+@{
+    ViewBag.Title = "display";
+    var num1 = Request["text1"];
+    var num2 = Request["text2"];
+    Console.WriteLine(num1);
+    Console.WriteLine(num2);
+}
+
+<img src="~/Content/export-map-share.png" alt="World Map" style="width:100%;height:100%;
+        position:absolute;top:-90;left:-180;z-index:-5000;top:90;right:180" />
+
+@{
+    
+    var data = (Server)ViewBag.Message;
+
+    if (data != null)
+    {
+        <H1> Lon: @data.Lon</H1>
+        <H1> Lan: @data.Lan</H1>
+    }
+}
