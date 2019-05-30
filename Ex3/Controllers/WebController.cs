@@ -1,11 +1,11 @@
 ﻿using Ex3.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 
@@ -14,82 +14,100 @@ namespace Ex3.Controllers
     
     public class WebController : Controller
     {
-        bool stop = false;
         // GET: Web
         public ActionResult Index()
         {
             return View();
         }
 
+
+
+        [HttpGet]
+        public ActionResult timesPerSecond(string ip, int port, int times)
+        {   
+            Server ser= Models.Server.getInstance();
+            Session["time"] = times;
+            return View();
+            
+        }
+
         [HttpGet]
         public ActionResult display(string ip, int port)
         {
-            Server ser = new Server();
-           ConnectToServer(ip, port, ser);
+            // Check whether or not the string ip is IP format, or a filename.
+            bool flg = checkIfIP(ip); 
+            if (flg) //if its a file-> get the lon and lat
+                SendGetCommands(ip,port);
+            else // Open file
+                LoadFile(ip,port);
+           
             return View();
         }
 
-        public void ConnectToServer(string ip, int port, Server s)
+        
+        bool checkIfIP(string text)
         {
-            IPAddress iPAddress = IPAddress.Parse(ip);
-            IPEndPoint localEndPoint = new IPEndPoint(iPAddress, port);
-            Socket listener = new Socket(iPAddress.AddressFamily,
-                         SocketType.Stream, ProtocolType.Tcp);
-
-            try
+            foreach (char i in text)
             {
+                if (!(Char.IsDigit(i) || i == '.')){
+                    return false ;
+                }
+                    
+            }
+            return true; 
+        }
 
-                // Using Bind() method we associate a 
-                // network address to the Server Socket 
-                // All client that will connect to this  
-                // Server Socket must know this network 
-                // Address 
-                listener.Bind(localEndPoint);
-
-                // Using Listen() method we create  
-                // the Client list that will want 
-                // to connect to Server 
-                listener.Listen(10);
-
-                // listen always on new thread
-                Thread t1 = new Thread(delegate ()
+        float getValue(string line, NetworkStream nt,StreamReader sr )
+        {
+            nt.Flush();
+            Byte[] data = System.Text.Encoding.UTF8.GetBytes(line);
+            nt.Write(data, 0, data.Length);
+            string data1 = sr.ReadLine();
+            string resultString = string.Empty;
+            bool charWasFound = false;
+            for (int i = 0; i < data1.Length; i++)
+            {
+                if (data1[i] == '=')
                 {
-                    Console.WriteLine("Waiting connection ... ");
-                    // Suspend while waiting for 
-                    // incoming connection Using  
-                    // Accept() method the server  
-                    // will accept connection of client 
-                    Socket clientSocket = listener.Accept();
-                    while (!stop)
-                    {
-                        // Data buffer 
-                        byte[] bytes = new Byte[1024];
-                        string data = null;
-                        //int numByte = clientSocket.Receive(bytes);
-                        //data = ASCIIEncoding.ASCII.GetString(bytes, 0, numByte);
-                        //if (data != null)
-                        //{
-                            //ParseLonAndLat(data);
-                            stop = true;
-                            s.Lan = 31.1234f;
-                            s.Lon = -168.1234f;
-                            ViewData["Message"] = s;
-                            
-                        
-                            RedirectToAction("display");
-                        View();
-                            
-
-                        //}
-                    }
-                      });
-                    t1.Start();
-
+                    charWasFound = true;
+                }
+                if (charWasFound)
+                {
+                    if (Char.IsDigit(data1[i]) || data1[i] == '-' || data1[i]=='.')
+                        resultString += data1[i];
+                }
+                
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
+            float parsedFloat = float.Parse(resultString);
+            return parsedFloat;
+
+        }
+
+
+
+        void SendGetCommands(string ip, int port)
+        {
+            NetworkStream netStream;
+            Server ser;
+            ser = Models.Server.getInstance();
+            ser.Ip = ip;
+            ser.Port = port;
+            TcpClient client = new TcpClient(ip, port);
+            netStream = client.GetStream();
+            StreamReader streamReader = new StreamReader(netStream);
+
+
+            float lon = getValue("get /position/longitude-deg\r\n", netStream, streamReader);
+            float lat = getValue("get /position/latitude-deg\r\n", netStream, streamReader);
+
+
+            ViewBag.lon = lon;
+            ViewBag.lat = lat;
+        }
+
+        void LoadFile(string fileName, int times)
+        {
+
         }
     }
 }

@@ -1,22 +1,42 @@
 ﻿@using Ex3.Models;
 @{
     ViewBag.Title = "display";
-    var num1 = Request["text1"];
-    var num2 = Request["text2"];
-    Console.WriteLine(num1);
-    Console.WriteLine(num2);
+
 }
 
-<img src="~/Content/export-map-share.png" alt="World Map" style="width:100%;height:100%;
-        position:absolute;top:-90;left:-180;z-index:-5000;top:90;right:180" />
 
-@{
-    
-    var data = (Server)ViewBag.Message;
-
-    if (data != null)
-    {
-        <H1> Lon: @data.Lon</H1>
-        <H1> Lan: @data.Lan</H1>
+<style>
+    .position {
+        height: 25px;
+        width: 25px;
+        border-radius: 50%;
+        background-color: red;
+        display: inline-block;
     }
-}
+</style>
+<!--span class="position"></!--span><!---->
+<canvas id="MyCanvas" border:10px solid red" />
+
+
+
+<script>
+        var canvas = document.getElementById("MyCanvas");
+        var ctx = canvas.getContext("2d");
+        ctx.canvas.width = window.innerWidth;
+        ctx.canvas.height = window.innerHeight;
+        ctx.beginPath();
+        ctx.font = "7px David";
+        var lon = (@ViewBag.lon +90)*(canvas.height/180);
+        var lat = (@ViewBag.lat+180) * (canvas.width / 360);;
+        // lat = y , lon = x.
+        ctx.fillText("lon: "+ lon+ "lat: " +lat,10,50);
+        ctx.fillStyle = "#FF0000";
+        
+        ctx.arc(1000, 200, 50, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+</script>
+
+
+
+
