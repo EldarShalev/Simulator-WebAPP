@@ -1,0 +1,81 @@
+﻿
+@{
+    ViewBag.Title = "displayFlight";
+}
+
+<canvas id="myCanvas" style="position:absolute"></canvas>
+<script>
+        myCanvas.setAttribute('width', window.innerWidth)
+        myCanvas.setAttribute('height', window.innerHeight)
+        var dimension = [document.documentElement.clientWidth, document.documentElement.clientHeight];
+        var can = document.getElementById("myCanvas");
+        can.width = dimension[0];
+        can.height = dimension[1];
+        var ctx = can.getContext("2d");
+        var prevLon=null;
+        var prevLat=null;
+        /**
+         * Draw points on canvas
+         */
+        function drawPoint(lon, lat) {
+            ctx.beginPath();
+            ctx.arc(lon, lat, 5, 5, 10 * Math.PI);
+            ctx.fillStyle = "Red";
+            ctx.fill();
+        }
+         /**
+         * Draw Lines from point to point
+         */
+        function drawLine(newlon, newlat) {
+            ctx.beginPath();
+            ctx.moveTo(prevLon, prevLat);
+            ctx.lineTo(newlon, newlat);
+            ctx.strokeStyle = "#FF0000";
+            ctx.stroke();
+        }
+         /**
+          * Handle Interval time
+         * */
+        function main() {
+            var IntervalTime = @ViewBag.time;
+            IntervalTime = 1000 * IntervalTime;
+             /**
+             * get the xml and if it's the EOF, show the map.
+             */
+            myTimer = (function () {
+                $.post("@Url.Action("GetState")").done(function (xml) {
+                    var xmlDoc = $.parseXML(xml);
+                    $xml = $(xmlDoc);
+                    if ($xml.find("error").text()) {
+                        alert("Error! file not found");
+                        while (true) {}
+                    }
+                    else if ($xml.find("END").text()) {
+                        alert("Done!");
+                        while (true) {}
+                    }
+                    else {
+                        lon = $xml.find("Lon").text();
+                        lat = $xml.find("Lat").text();
+                        var newlon = Math.abs((can.width / 360) * (parseFloat(lon) + 180));
+                        var newlat = Math.abs((can.height / 180) * (parseFloat(lat) - 90));
+                        if (prevLat == null || prevLon == null) {
+                            drawPoint(newlon, newlat);
+                        }
+                        else {
+                            drawLine(newlon, newlat);
+                        }
+                        prevLon = newlon;
+                        prevLat = newlat;
+                    }
+                });
+            });
+            if (IntervalTime != 0) {
+                setInterval(myTimer, IntervalTime);
+            }
+            myTimer();
+            }
+            main();
+</script>
+</>
+

@@ -31,6 +31,11 @@ namespace Ex3
                 defaults: new { controller = "Web", action = "timesPerSecond", id = UrlParameter.Optional }
             );
 
+            routes.MapRoute(
+                name: "saveToFile",
+                url: "save/{ip}/{port}/{rate}/{time}/{fileName}",
+                defaults: new { controller = "Web", action = "saveToFile", id = UrlParameter.Optional }
+            );
             //routes.MapRoute(name:"display", url:"display/{ip}/{port}", defaults: new
             //{ Controller = "Web", action ="display"});
         }

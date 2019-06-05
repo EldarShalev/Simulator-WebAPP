@@ -4,19 +4,68 @@
 }
 
 
+<style>
+    .position {
+        height: 25px;
+        width: 25px;
+        border-radius: 50%;
+        background-color: red;
+        display: inline-block;
+    }
+</style>
+<!--span class="position"></!--span><!---->
+<canvas id="MyCanvas" border:10px solid red" />
+
+
 <script>
-    var IntervalTime = @Session["time"] * 1000
+
+    
+    var canvas = document.getElementById("MyCanvas");
+    var ctx = canvas.getContext("2d");
+    ctx.canvas.width = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;
+    canvas.style.position = "absolute";
+    ctx.style.position = "absolute";
+    ctx.fillStyle = "#FF0000";
+    var prevLon = null;
+    var prevLat = null;
+   
+
+</script>
+<script>
+    var IntervalTime = @Session["time"] * 500
     myTimer = (function () {
-        $.post( "@Url.Action("GetEmployee")").done(function (xml) {
+        $.post( "@Url.Action("GetServer")").done(function (xml) {
                 var xmlDoc = $.parseXML( xml ),
                 $xml = $( xmlDoc ),
-                FirstName = $xml.find( "FirstName" ).text();
-                LastName = $xml.find( "LastName" ).text();
-                Salary = $xml.find("Salary").text();
+                lon = $xml.find( "Lon" ).text();
+                lat = $xml.find( "Lat" ).text();
 
-                $("#prodId").text(FirstName);
-                $("#prodName").text(LastName);
-                $("#prodSalary").text(Salary);
+
+            var normLon = (canvas.width / 360) * (parseFloat(lon.valueOf()) + 180);
+            var normLat = (canvas.height / 180) * (parseFloat(lat.valueOf()) + 90);
+            if (prevLat == null || prevLon == null) {
+                ctx.fillStyle = "#FF0000";
+                ctx.arc(normLon, normLat, 8, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.moveTo(normLon, normLat);
+                prevLon = lon;
+                prevLat = lat;
+            }
+            ctx.lineTo(normLon, normLat);
+            ctx.stroke();
+
+
+            ctx.fillStyle = "#000000";
+            ctx.font = "18px David";
+
+
+        // Normalized Option 1: 
+        // var x = (window.innerWidth / 360) * (parseFloat(lon.valueOf()) + 180);
+        // var y = (window.innerHeight / 180) * (parseFloat(lat.valueOf()) + 90);
+        // Normalized Option 2:
+        //(Lon + 180) * canvas.width / 360
+        //  (Lat + 90) * canvas.height / 180
 
         });
     });
@@ -24,19 +73,6 @@
     setInterval(myTimer, IntervalTime);
     myTimer();
 
-    $("#btnSearch").click(function () {
-        var input = {
-            name: $("#NameID").val(),
-        };
-        $.post("@Url.Action("Search", "First")", input).done(function (data) {
-            var xmlDoc = $.parseXML(data),
-                $xml = $(xmlDoc),
-                FirstName = $xml.find("FirstName").text();
-            LastName = $xml.find("LastName").text();
-            Salary = $xml.find("Salary").text();
 
-            $("#lstProducts").append("<li>" + FirstName + " " + LastName + " : $" + Salary + "</li>");
-        });
-    });
 
 </script>

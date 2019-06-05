@@ -25,14 +25,14 @@
         ctx.canvas.width = window.innerWidth;
         ctx.canvas.height = window.innerHeight;
         ctx.beginPath();
-        ctx.font = "7px David";
-        var lon = (@ViewBag.lon +90)*(canvas.height/180);
-        var lat = (@ViewBag.lat+180) * (canvas.width / 360);;
-        // lat = y , lon = x.
-        ctx.fillText("lon: "+ lon+ "lat: " +lat,10,50);
+        var lon = (@ViewBag.lon);
+        var lat = (@ViewBag.lat);
+        var normLon = (canvas.width / 360) * (parseFloat(lon.valueOf()) + 180);
+        var normLat = (canvas.height / 180) * (parseFloat(lat.valueOf()) + 90);
+
+
         ctx.fillStyle = "#FF0000";
-        
-        ctx.arc(1000, 200, 50, 0, 2 * Math.PI);
+        ctx.arc(normLon, normLat, 8, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
 </script>

@@ -26,7 +26,7 @@
         }
     </style>
 </head>
-<body background="~/Content/export-map-share.png"  class="center fit" style="background-size: 100%  ">
+<body background="~/Content/export-map-share.png" class="center fit" style="background-size: cover; background-attachment:fixed ">
 
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script type="text/javascript" language="JavaScript">
@@ -38,10 +38,12 @@
             set_body_height();
         });
     </script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
     @RenderBody()
 
-    
 
-   
+
+
 </body>
 </html>

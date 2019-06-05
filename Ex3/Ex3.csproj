@@ -108,7 +108,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\FileHandler.cs" />
     <Compile Include="Models\Server.cs" />
+    <Compile Include="Models\TimeHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +125,8 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Web\display.cshtml" />
     <Content Include="Views\Web\timesPerSecond.cshtml" />
+    <Content Include="Views\Web\saveToFile.cshtml" />
+    <Content Include="Views\Web\displayFlight.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
